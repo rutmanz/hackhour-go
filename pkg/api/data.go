@@ -70,7 +70,7 @@ func (c *HackHourClient) GetGoals() (*Goals, error) {
 }
 
 // GET /api/history/:slackId
-type History []struct {
+type HistorySession struct {
 	CreatedAt time.Time `json:"createdAt"`
 	Time      int       `json:"time"`
 	Elapsed   int       `json:"elapsed"`
@@ -78,6 +78,7 @@ type History []struct {
 	Ended     bool      `json:"ended"`
 	Work      string    `json:"work"`
 }
+type History []HistorySession
 
 func (c *HackHourClient) GetHistory() (*History, error) {
 	return get[History](c, "history")
