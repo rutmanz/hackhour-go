@@ -15,20 +15,21 @@ var startCmd = &cobra.Command{
 	Use:   "start [message...]",
 	Short: "Starts a new arcade session",
 	Args:  cobra.MinimumNArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		msg := strings.Join(args, " ")
 		client := newClient()
 		session, err := client.SessionStart(msg)
 		if err != nil {
-			fmt.Println("Failed to start session:", err)
-			return
+			return err
 		}
 		fmt.Println("Session started:", session.ID)
+		return nil
 	},
 }
 
 func init() {
 	sessionCmd.AddCommand(startCmd)
+	startCmd.SetErrPrefix("Failed to start session:")
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command

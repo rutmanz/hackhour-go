@@ -13,21 +13,21 @@ import (
 var cancelCmd = &cobra.Command{
 	Use:   "cancel",
 	Short: "Cancels the current HackHour session",
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		client := newClient()
 		session, err := client.SessionCancel()
 		if err != nil {
-			fmt.Println("Failed to cancel session:", err)
-			return
+			return err
 		}
 		fmt.Println("Session cancelled:", session.ID)
 		getJsonEncoder().Encode(session)
+		return nil
 	},
 }
 
 func init() {
 	sessionCmd.AddCommand(cancelCmd)
-
+	cancelCmd.SetErrPrefix("Failed to cancel session:")	
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command

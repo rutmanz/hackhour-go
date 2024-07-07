@@ -4,7 +4,6 @@ Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"fmt"
 	"sort"
 
 	"github.com/spf13/cobra"
@@ -12,21 +11,14 @@ import (
 
 // goalsCmd represents the goals command
 var goalsCmd = &cobra.Command{
-	Use:   "goals",
+	Use:     "goals",
 	GroupID: "data",
-	Short: "Shows your HackHour goals list",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	Run: func(cmd *cobra.Command, args []string) {
+	Short:   "Shows your HackHour goals list",
+	RunE: func(cmd *cobra.Command, args []string) error {
 		client := newClient()
 		goalsPtr, err := client.GetGoals()
 		if err != nil {
-			fmt.Printf("Failed to get history: %v\n", err)
-			return
+			return err
 		}
 		goals := *goalsPtr
 		sort.Slice(goals, func(i, j int) bool {
@@ -35,11 +27,8 @@ to quickly create a Cobra application.`,
 			}
 			return goals[i].Minutes < goals[j].Minutes
 		})
-		err = getJsonEncoder().Encode(goals)
-		if err != nil {
-			fmt.Println(err, goals)
-			return
-		}
+		getJsonEncoder().Encode(goals)
+		return nil
 	},
 }
 

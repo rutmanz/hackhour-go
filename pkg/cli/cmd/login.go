@@ -20,7 +20,7 @@ var loginCmd = &cobra.Command{
 	Long: `Authorizes the client with your hackhour api key
 	
 	The api key can be found by running /api in the slack workspace`,
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		var key string
 		if v := os.Getenv("HACKHOUR_API_KEY"); v != "" {
 			key = v
@@ -31,26 +31,26 @@ var loginCmd = &cobra.Command{
 		if key == "" {
 			fmt.Println("Please provide an api key")
 			cmd.Usage()
-			return
+			return nil
 		}
 		fmt.Printf("Logging in...")
 
 		client := api.NewHackHourClient(key)
 		_, err := client.GetStats()
 		if err != nil {
-			fmt.Printf("\nFailed to login: %v\n", err)
-			os.Exit(1)
+			return err
 		}
 		fmt.Print(" Success!\n")
 
 		viper.Set("api_key", key)
 		viper.WriteConfig()
+		return nil
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(loginCmd)
-
+	loginCmd.SetErrPrefix("Login failed:")
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
