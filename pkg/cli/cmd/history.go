@@ -1,10 +1,10 @@
 package cmd
 
 import (
+	"fmt"
 	"sort"
 
-	"github.com/fatih/color"
-	"github.com/rodaine/table"
+	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/rutmanz/hackhour-go/pkg/api"
 	"github.com/spf13/cobra"
 )
@@ -39,17 +39,16 @@ var historyCmd = &cobra.Command{
 			}
 			return history[i].CreatedAt.Before(history[j].CreatedAt)
 		})
-		headerFmt := color.New(color.FgGreen, color.Underline).SprintfFunc()
-
-		tbl := table.New("Created At", "Duration", "Goal", "Work")
-		tbl.WithHeaderFormatter(headerFmt)
-		tbl.WithFirstColumnFormatter(color.New(color.FgYellow).SprintfFunc())
-
+		tbl := table.NewWriter()
+		tbl.SetAutoIndex(true)
+		tbl.AppendHeader(table.Row{"Date", "Time", "Goal", "Activity"})
+		total := 0
 		for _, session := range history {
-			tbl.AddRow(session.CreatedAt.Format("Mon Jan 1 15:05 PST"), session.Elapsed, session.Goal, session.Work)
+			tbl.AppendRow(table.Row{session.CreatedAt.Format("Mon Jan 1 15:05 PST"), session.Elapsed, session.Goal, session.Work})
+			total += session.Elapsed
 		}
-
-		tbl.Print()
+		tbl.AppendFooter(table.Row{"", "", "Total", fmt.Sprintf("%d minutes", total)})
+		fmt.Println(tbl.Render())
 		return nil
 	},
 }
