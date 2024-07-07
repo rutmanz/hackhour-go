@@ -39,6 +39,9 @@ func (c *HackHourClient) createRequestWithBody(method string, endpoint string, b
 	if err != nil {
 		return nil, err
 	}
+	if body != nil {
+		req.Header.Set("Content-Type", "application/json")
+	}
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %v", c.apiKey))
 	return req, nil
 }
