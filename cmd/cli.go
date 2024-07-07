@@ -9,7 +9,7 @@ import (
 
 func main() {
 	client := api.NewHackHourClient(os.Getenv("HACKHOUR_API_KEY"))
-	out, err := client.Status()
+	out, err := client.GetHistory()
 	if err != nil {
 		panic(err)
 	}

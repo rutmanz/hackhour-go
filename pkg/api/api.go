@@ -3,52 +3,12 @@ package api
 import (
 	"encoding/json"
 	"fmt"
-	"net/http"
+	"time"
 )
 
-type HackHourClient struct {
-	client  *http.Client
-	apiKey  string
-	baseURL string
-}
 
-func NewHackHourClient(apiKey string) *HackHourClient {
-	return &HackHourClient{
-		client:  &http.Client{},
-		apiKey:  apiKey,
-		baseURL: "https://hackhour.hackclub.com",
-	}
-}
-
-func (c *HackHourClient) createRequest(method string, endpoint string) (*http.Request, error) {
-	if endpoint[0] == '/' {
-		return nil, fmt.Errorf("endpoint should not have a leading slash")
-	}
-	req, err := http.NewRequest(method, fmt.Sprintf("%v/%v", c.baseURL, endpoint), nil)
-	if err != nil {
-		return nil, err
-	}
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %v", c.apiKey))
-	return req, nil
-}
-
-func (c *HackHourClient) Ping() bool {
-	req, err := c.createRequest("GET", "ping")
-	if err != nil {
-		return false
-	}
-	_, err = c.client.Do(req)
-	return err == nil
-}
-
-type StatusResponse struct {
-	ActiveSessions    int  `json:"activeSessions"`
-	AirtableConnected bool `json:"airtableConnected"`
-	SlackConnected    bool `json:"slackConnected"`
-}
-
-func (c *HackHourClient) Status() (*StatusResponse, error) {
-	req, err := c.createRequest("GET", "status")
+func get[T interface{}](c *HackHourClient, endpoint string) (*T, error) {
+	req, err := c.createGetRequest(fmt.Sprintf("api/%v/%v", endpoint, c.slackId))
 	if err != nil {
 		return nil, err
 	}
@@ -56,10 +16,74 @@ func (c *HackHourClient) Status() (*StatusResponse, error) {
 	if err != nil {
 		return nil, err
 	}
-	out := &StatusResponse{}
+	out := &struct{
+		Ok bool `json:"ok"`
+		Data T `json:"data"`
+	}{}
+
 	err = json.NewDecoder(resp.Body).Decode(out)
 	if err != nil {
 		return nil, err
 	}
-	return out, nil
+	return &out.Data, nil
 }
+
+
+
+
+// GET /api/session/:slackId
+type Session struct {
+	ID        string    `json:"id"`
+	CreatedAt time.Time `json:"createdAt"`
+	Time      int       `json:"time"`
+	Elapsed   int       `json:"elapsed"`
+	Remaining int       `json:"remaining"`
+	EndTime   time.Time `json:"endTime"`
+	Goal      string    `json:"goal"`
+	Paused    bool      `json:"paused"`
+	Completed bool      `json:"completed"`
+	MessageTs string    `json:"messageTs"`
+}
+
+func (c *HackHourClient) GetSession() (*Session, error) {
+	return get[Session](c, "session")
+}
+
+// GET /api/stats/:slackId
+type Stats struct {
+	Sessions int `json:"sessions"`
+	Total    int `json:"total"`
+}
+
+func (c *HackHourClient) GetStats() (*Stats, error) {
+	return get[Stats](c, "session")
+}
+
+// GET /api/goals/:slackId
+type Goals struct {
+	Goals []struct{
+		Name string `json:"name"`
+		Minutes int `json:"minutes"`
+	} `json:"goals"`
+}
+
+func (c *HackHourClient) GetGoals() (*Goals, error) {
+	return get[Goals](c, "goals")
+}
+
+
+// GET /api/history/:slackId
+type History []struct{
+	CreatedAt time.Time `json:"createdAt"`
+	Time      int       `json:"time"`
+	Elapsed   int       `json:"elapsed"`
+	Goal      string    `json:"goal"`
+	Ended     bool      `json:"ended"`
+	Work      string    `json:"work"`
+}
+
+func (c *HackHourClient) GetHistory() (*History, error) {
+	return get[History](c, "history")
+}
+
+
