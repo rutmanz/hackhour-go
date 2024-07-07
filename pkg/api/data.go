@@ -6,7 +6,6 @@ import (
 	"time"
 )
 
-
 func get[T interface{}](c *HackHourClient, endpoint string) (*T, error) {
 	req, err := c.createGetRequest(fmt.Sprintf("api/%v/%v", endpoint, c.slackId))
 	if err != nil {
@@ -16,20 +15,21 @@ func get[T interface{}](c *HackHourClient, endpoint string) (*T, error) {
 	if err != nil {
 		return nil, err
 	}
-	out := &struct{
-		Ok bool `json:"ok"`
-		Data T `json:"data"`
+	out := &struct {
+		Ok    bool   `json:"ok"`
+		Error string `json:"error"`
+		Data  T      `json:"data"`
 	}{}
 
 	err = json.NewDecoder(resp.Body).Decode(out)
 	if err != nil {
 		return nil, err
 	}
+	if !out.Ok {
+		return nil, fmt.Errorf("API Error: %v", out.Error)
+	}
 	return &out.Data, nil
 }
-
-
-
 
 // GET /api/session/:slackId
 type Session struct {
@@ -61,9 +61,9 @@ func (c *HackHourClient) GetStats() (*Stats, error) {
 
 // GET /api/goals/:slackId
 type Goals struct {
-	Goals []struct{
-		Name string `json:"name"`
-		Minutes int `json:"minutes"`
+	Goals []struct {
+		Name    string `json:"name"`
+		Minutes int    `json:"minutes"`
 	} `json:"goals"`
 }
 
@@ -71,9 +71,8 @@ func (c *HackHourClient) GetGoals() (*Goals, error) {
 	return get[Goals](c, "goals")
 }
 
-
 // GET /api/history/:slackId
-type History []struct{
+type History []struct {
 	CreatedAt time.Time `json:"createdAt"`
 	Time      int       `json:"time"`
 	Elapsed   int       `json:"elapsed"`
@@ -85,5 +84,3 @@ type History []struct{
 func (c *HackHourClient) GetHistory() (*History, error) {
 	return get[History](c, "history")
 }
-
-
