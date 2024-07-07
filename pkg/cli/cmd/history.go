@@ -3,6 +3,8 @@ package cmd
 import (
 	"sort"
 
+	"github.com/fatih/color"
+	"github.com/rodaine/table"
 	"github.com/rutmanz/hackhour-go/pkg/api"
 	"github.com/spf13/cobra"
 )
@@ -37,7 +39,17 @@ var historyCmd = &cobra.Command{
 			}
 			return history[i].CreatedAt.Before(history[j].CreatedAt)
 		})
-		getJsonEncoder().Encode(history)
+		headerFmt := color.New(color.FgGreen, color.Underline).SprintfFunc()
+
+		tbl := table.New("Created At", "Duration", "Goal", "Work")
+		tbl.WithHeaderFormatter(headerFmt)
+		tbl.WithFirstColumnFormatter(color.New(color.FgYellow).SprintfFunc())
+
+		for _, session := range history {
+			tbl.AddRow(session.CreatedAt.Format("Mon Jan 1 15:05 PST"), session.Elapsed, session.Goal, session.Work)
+		}
+
+		tbl.Print()
 		return nil
 	},
 }
