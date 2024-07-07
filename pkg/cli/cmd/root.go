@@ -40,6 +40,7 @@ func Execute() {
 			viper.SafeWriteConfigAs(path.Join(os.Getenv("HOME"), ".hackhour-go", "config.json"))
 		} else {
 			// Config file was found but another error was produced
+			fmt.Println("Error with config file")
 		}
 	}
 	err := rootCmd.Execute()

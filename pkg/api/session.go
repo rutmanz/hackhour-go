@@ -32,7 +32,7 @@ func post[Req interface{}, Resp interface{}](c *HackHourClient, endpoint string,
 		return nil, err
 	}
 	if !out.Ok {
-		return nil, fmt.Errorf("API Error: %v", out.Error)
+		return nil, fmt.Errorf("%v", out.Error)
 	}
 
 	return &out.Data, nil
@@ -72,6 +72,6 @@ type SessionCancelResponse struct {
 	CreatedAt string `json:"createdAt"`
 }
 
-func (c *HackHourClient) SessionCancel(activity string) (*SessionCancelResponse, error) {
+func (c *HackHourClient) SessionCancel() (*SessionCancelResponse, error) {
 	return post[struct{}, SessionCancelResponse](c, "cancel", &struct{}{})
 }
