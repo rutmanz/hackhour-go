@@ -6,7 +6,6 @@ import (
 )
 
 func post[Req interface{}, Resp interface{}](c *HackHourClient, endpoint string, body *Req) (*Resp, error) {
-
 	b, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
@@ -16,10 +15,12 @@ func post[Req interface{}, Resp interface{}](c *HackHourClient, endpoint string,
 	if err != nil {
 		return nil, err
 	}
+
 	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, err
 	}
+
 	out := &struct {
 		Ok    bool   `json:"ok"`
 		Error string `json:"error"`
@@ -33,6 +34,7 @@ func post[Req interface{}, Resp interface{}](c *HackHourClient, endpoint string,
 	if !out.Ok {
 		return nil, fmt.Errorf("API Error: %v", out.Error)
 	}
+
 	return &out.Data, nil
 }
 

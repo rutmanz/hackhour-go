@@ -56,7 +56,7 @@ type Stats struct {
 }
 
 func (c *HackHourClient) GetStats() (*Stats, error) {
-	return get[Stats](c, "session")
+	return get[Stats](c, "stats")
 }
 
 // GET /api/goals/:slackId
