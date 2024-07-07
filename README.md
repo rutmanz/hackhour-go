@@ -6,7 +6,7 @@ Golang CLI tool and API wrapper for HackClub's [HackHour API](https://github.com
 ## CLI Tool
 ### Installation
 ```
-$ go install github.com/rutmanz/hackhour-go
+$ go install github.com/rutmanz/hackhour-go@latest
 ```
 ### Usage
 First locate your HackHour API Key, or generate one using `/api` in Slack, then use it to login
