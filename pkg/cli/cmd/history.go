@@ -12,8 +12,9 @@ import (
 
 // historyCmd represents the history command
 var historyCmd = &cobra.Command{
-	Use:   "history",
-	Short: "A brief description of your command",
+	Use:     "history",
+	GroupID: "data",
+	Short:   "Shows your HackHour session history",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
 

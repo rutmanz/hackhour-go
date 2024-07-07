@@ -13,7 +13,8 @@ import (
 // goalsCmd represents the goals command
 var goalsCmd = &cobra.Command{
 	Use:   "goals",
-	Short: "A brief description of your command",
+	GroupID: "data",
+	Short: "Shows your HackHour goals list",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
 

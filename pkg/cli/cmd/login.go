@@ -15,12 +15,24 @@ import (
 // loginCmd represents the login command
 var loginCmd = &cobra.Command{
 	Use:   "login [flags] [api key]",
+	Args:  cobra.MaximumNArgs(1),
 	Short: "Authorizes the client with your hackhour api key",
 	Long: `Authorizes the client with your hackhour api key
 	
 	The api key can be found by running /api in the slack workspace`,
 	Run: func(cmd *cobra.Command, args []string) {
-		key := args[0]
+		var key string
+		if v := os.Getenv("HACKHOUR_API_KEY"); v != "" {
+			key = v
+		}
+		if len(args) >= 1 {
+			key = args[0]
+		}
+		if key == "" {
+			fmt.Println("Please provide an api key")
+			cmd.Usage()
+			return
+		}
 		fmt.Printf("Logging in...")
 
 		client := api.NewHackHourClient(key)
@@ -29,8 +41,8 @@ var loginCmd = &cobra.Command{
 			fmt.Printf("\nFailed to login: %v\n", err)
 			os.Exit(1)
 		}
-		fmt.Printf("Success!\n")
-		
+		fmt.Print(" Success!\n")
+
 		viper.Set("api_key", key)
 		viper.WriteConfig()
 	},
@@ -47,8 +59,6 @@ func init() {
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	loginCmd.ValidArgs = []string{"APIKey"}
-	loginCmd.Args = cobra.ExactArgs(1)
 
 	// loginCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

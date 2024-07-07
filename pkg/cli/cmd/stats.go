@@ -10,8 +10,9 @@ import (
 )
 
 var statsCmd = &cobra.Command{
-	Use:   "stats",
-	Short: "A brief description of your command",
+	Use:     "stats",
+	GroupID: "data",
+	Short:   "Shows your HackHour statistics",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
 
