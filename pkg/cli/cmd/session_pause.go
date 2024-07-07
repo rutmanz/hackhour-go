@@ -6,7 +6,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-
 var pauseCmd = &cobra.Command{
 	Use:   "pause",
 	Short: "Pauses the current session",

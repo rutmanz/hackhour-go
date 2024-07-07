@@ -30,7 +30,7 @@ func Execute() {
 	viper.AddConfigPath(".")
 	if err := viper.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
-			os.Mkdir(path.Join(os.Getenv("HOME"), ".hackhour-go"), 0755)
+			os.Mkdir(path.Join(os.Getenv("HOME"), ".hackhour-go"), 0o755)
 
 			viper.Set("api_key", os.Getenv("HACKHOUR_API_KEY"))
 			viper.SafeWriteConfigAs(path.Join(os.Getenv("HOME"), ".hackhour-go", "config.json"))
@@ -50,7 +50,6 @@ func init() {
 		ID:    "data",
 		Title: "Queries:",
 	})
-
 }
 
 func newClient() *api.HackHourClient {

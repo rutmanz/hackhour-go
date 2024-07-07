@@ -8,7 +8,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-
 var showCmd = &cobra.Command{
 	Use:   "show",
 	Short: "Shows the state of the current session",
