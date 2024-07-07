@@ -60,11 +60,9 @@ func (c *HackHourClient) GetStats() (*Stats, error) {
 }
 
 // GET /api/goals/:slackId
-type Goals struct {
-	Goals []struct {
-		Name    string `json:"name"`
-		Minutes int    `json:"minutes"`
-	} `json:"goals"`
+type Goals []struct {
+	Name    string `json:"name"`
+	Minutes int    `json:"minutes"`
 }
 
 func (c *HackHourClient) GetGoals() (*Goals, error) {
