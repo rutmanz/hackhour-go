@@ -9,10 +9,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// pauseCmd represents the pause command
-var pauseCmd = &cobra.Command{
-	Use:   "pause",
-	Short: "Pauses the current session",
+// resumeCmd represents the resume command
+var resumeCmd = &cobra.Command{
+	Use:   "resume",
+	Short: "Resumes the current session",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		client := newClient()
 		session, err := client.GetSession()
@@ -20,34 +20,34 @@ var pauseCmd = &cobra.Command{
 			return err
 		}
 		if session.Paused {
-			fmt.Println("Session already paused")
-		} else {
-			fmt.Println("Pausing session...")
+			fmt.Println("Resuming session...")
 			res, err := client.SessionPause()
 			if err != nil {
 				return err
 			}
 			if res.Paused {
-				fmt.Println("Session paused")
+				fmt.Println("Session could not be resumed")
 			} else {
-				fmt.Println("Session could not be paused")
+				fmt.Println("Session resumed")
 			}
+		} else {
+			fmt.Println("Session already running")
 		}
 		return nil
 	},
 }
 
 func init() {
-	sessionCmd.AddCommand(pauseCmd)
+	sessionCmd.AddCommand(resumeCmd)
 
-	pauseCmd.SetErrPrefix("Failed to pause session:")
+	resumeCmd.SetErrPrefix("Failed to resume session:")
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// pauseCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// resumeCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// pauseCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// resumeCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
