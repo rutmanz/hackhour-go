@@ -21,7 +21,7 @@ var showCmd = &cobra.Command{
 		if runtime.GOOS != "windows" {
 			fmt.Printf("\033]8;;https://hackclub.slack.com/archives/C06SBHMQU8G/p%v\033\\Open in Slack\033]8;;\033\\\n\n", strings.Replace(session.MessageTs, ".", "", 1))
 		}
-		getJsonEncoder().Encode(session)
+		printSimple(session)
 		return nil
 	},
 }

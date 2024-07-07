@@ -7,9 +7,10 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"reflect"
 
-	"github.com/mattn/go-colorable"
-	"github.com/neilotoole/jsoncolor"
+	"github.com/jedib0t/go-pretty/v6/table"
+	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/rutmanz/hackhour-go/pkg/api"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -60,24 +61,19 @@ func newClient() *api.HackHourClient {
 	return api.NewHackHourClient(viper.GetString("api_key"))
 }
 
-func getJsonEncoder() *jsoncolor.Encoder {
-	var enc *jsoncolor.Encoder
-
-	// Note: this check will fail if running inside Goland (and
-	// other IDEs?) as IsColorTerminal will return false.
-	if jsoncolor.IsColorTerminal(os.Stdout) {
-		// Safe to use color
-		out := colorable.NewColorable(os.Stdout) // needed for Windows
-		enc = jsoncolor.NewEncoder(out)
-
-		// DefaultColors are similar to jq
-		clrs := jsoncolor.DefaultColors()
-
-		enc.SetColors(clrs)
-		enc.SetIndent("", "  ")
-	} else {
-		// Can't use color; but the encoder will still work
-		enc = jsoncolor.NewEncoder(os.Stdout)
+func printSimple[T any](data *T) {
+	tbl := table.NewWriter()
+	fields := reflect.VisibleFields(reflect.TypeOf(*data))
+	tbl.SetStyle(table.StyleRounded)
+	tbl.ResetHeaders()
+	tbl.Style().Options.SeparateColumns = false
+	tbl.SetColumnConfigs([]table.ColumnConfig{
+		{Number: 1, Align: text.AlignRight},
+		{Number: 2, Align: text.AlignLeft},
+	})
+	for _, field := range fields {
+		tbl.AppendRow(table.Row{field.Name, reflect.ValueOf(*data).FieldByName(field.Name).Interface()})
 	}
-	return enc
+
+	fmt.Println(tbl.Render())
 }

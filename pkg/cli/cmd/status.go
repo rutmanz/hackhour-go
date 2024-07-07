@@ -14,7 +14,7 @@ var statusCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		getJsonEncoder().Encode(status)
+		printSimple(status)
 		return nil
 	},
 }

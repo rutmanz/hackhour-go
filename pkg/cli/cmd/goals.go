@@ -1,8 +1,10 @@
 package cmd
 
 import (
+	"fmt"
 	"sort"
 
+	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/spf13/cobra"
 )
 
@@ -23,7 +25,14 @@ var goalsCmd = &cobra.Command{
 			}
 			return goals[i].Minutes < goals[j].Minutes
 		})
-		getJsonEncoder().Encode(goals)
+		tbl := table.NewWriter()
+		tbl.SetStyle(table.StyleRounded)
+		tbl.SetAutoIndex(true)
+		tbl.AppendHeader(table.Row{"Goal", "Minutes"})
+		for _, goal := range goals {
+			tbl.AppendRow(table.Row{goal.Name, goal.Minutes})
+		}
+		fmt.Println(tbl.Render())
 		return nil
 	},
 }

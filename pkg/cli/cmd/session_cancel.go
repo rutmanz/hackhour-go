@@ -6,7 +6,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-
 var cancelCmd = &cobra.Command{
 	Use:   "cancel",
 	Short: "Cancels the current HackHour session",
@@ -17,12 +16,12 @@ var cancelCmd = &cobra.Command{
 			return err
 		}
 		fmt.Println("Session cancelled:", session.ID)
-		getJsonEncoder().Encode(session)
+		printSimple(session)
 		return nil
 	},
 }
 
 func init() {
 	sessionCmd.AddCommand(cancelCmd)
-	cancelCmd.SetErrPrefix("Failed to cancel session:")	
+	cancelCmd.SetErrPrefix("Failed to cancel session:")
 }
