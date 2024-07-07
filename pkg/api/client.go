@@ -43,5 +43,6 @@ func (c *HackHourClient) createRequestWithBody(method string, endpoint string, b
 		req.Header.Set("Content-Type", "application/json")
 	}
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %v", c.apiKey))
+	req.Header.Set("User-Agent", "hackhour-go/0.0.1")
 	return req, nil
 }
