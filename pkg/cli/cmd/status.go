@@ -14,7 +14,7 @@ var statusCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		printSimple(status)
+		printSimple(*status)
 		return nil
 	},
 }

@@ -60,18 +60,22 @@ func newClient() *api.HackHourClient {
 	return api.NewHackHourClient(viper.GetString("api_key"))
 }
 
-func printSimple[T any](data *T) {
+func printSimple(objects ...any) {
 	tbl := table.NewWriter()
-	fields := reflect.VisibleFields(reflect.TypeOf(*data))
+
 	tbl.SetStyle(table.StyleRounded)
 	tbl.ResetHeaders()
 	tbl.Style().Options.SeparateColumns = false
 	tbl.SetColumnConfigs([]table.ColumnConfig{
-		{Number: 1, Align: text.AlignRight},
-		{Number: 2, Align: text.AlignLeft},
+		{Number: 1, Align: text.AlignRight, Colors: text.Colors{text.FgHiCyan}},
+		{Number: 2, Align: text.AlignLeft, Colors: text.Colors{text.FgWhite}},
 	})
-	for _, field := range fields {
-		tbl.AppendRow(table.Row{field.Name, reflect.ValueOf(*data).FieldByName(field.Name).Interface()})
+	for _, object := range objects {
+		fields := reflect.VisibleFields(reflect.TypeOf(object))
+		for _, field := range fields {
+			tbl.AppendRow(table.Row{field.Name, reflect.ValueOf(object).FieldByName(field.Name).Interface()})
+		}
+		tbl.AppendSeparator()
 	}
 
 	fmt.Println(tbl.Render())

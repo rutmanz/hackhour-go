@@ -16,7 +16,7 @@ var cancelCmd = &cobra.Command{
 			return err
 		}
 		fmt.Println("Session cancelled:", session.ID)
-		printSimple(session)
+		printSimple(*session)
 		return nil
 	},
 }
