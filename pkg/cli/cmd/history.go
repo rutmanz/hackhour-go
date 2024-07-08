@@ -63,7 +63,7 @@ var historyCmd = &cobra.Command{
 				tbl.AppendSeparator()
 				lastGoal = session.Goal
 			}
-			tbl.AppendRow(table.Row{session.CreatedAt.Format("Mon Jan 1 15:05 PST"), session.Elapsed, session.Goal, session.Work})
+			tbl.AppendRow(table.Row{session.CreatedAt.Local().Format("Mon Jan _2 15:04 MST"), session.Elapsed, session.Goal, session.Work})
 			total += session.Elapsed
 
 		}
