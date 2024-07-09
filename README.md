@@ -25,6 +25,10 @@ To see available commands, checkout the help page.
 hackhour-go help
 ```
 
+### Send to Session Thread
+`hackhour-go session send` supports a `-g` flag, which automatically appends the github or gitlab link to your latest commit to the message. It uses the first git remote for the url and uses `HEAD` for the commit hash. Keep in mind this will use the current checked-out commit locally, and you will need to push the commits before people can visit the links
+
+You can also automatically send commits as you make them, using a post-commit [git hook](https://www.atlassian.com/git/tutorials/git-hooks)
 
 ### Demo
 [![asciicast](https://asciinema.org/a/0n5osvDq0d0CUFsVyI6OBwkWS.svg)](https://asciinema.org/a/0n5osvDq0d0CUFsVyI6OBwkWS)
