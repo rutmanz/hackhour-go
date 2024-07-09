@@ -17,6 +17,7 @@ var sendCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		msg := strings.Join(args, " ")
 		client := newSlackClient()
+		var url string
 		if cmd.Flag("git").Value.String() == "true" {
 			repo, err := git.PlainOpenWithOptions(".", &git.PlainOpenOptions{DetectDotGit: true})
 			if err != nil {
@@ -38,10 +39,13 @@ var sendCmd = &cobra.Command{
 				return err
 			}
 			latest_commit := ref.Hash().String()
-			url := strings.Replace(path.Join(git_origin, "commit", latest_commit), ":/", "://", 1) // path.Join normalizes https:// to http:/
-			msg = fmt.Sprintf("%v\n%v", msg, url)
+			url = strings.Replace(path.Join(git_origin, "commit", latest_commit), ":/", "://", 1) // path.Join normalizes https:// to http:/
+			msg = fmt.Sprintf("%v\n\n%v", msg, url)
 		}
-		channel, ts, err := client.SendToSessionThread(msg)
+		if msg == "" {
+			return fmt.Errorf("message cannot be empty")
+		}
+		channel, ts, err := client.SendToSessionThread(msg, url)
 		if err != nil {
 			return err
 		}
