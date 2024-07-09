@@ -77,7 +77,7 @@ var historyCmd = &cobra.Command{
 			tbl.AppendRow(table.Row{session.CreatedAt.Local().Format("Mon Jan _2 15:04 MST"), session.Elapsed, session.Goal, session.Work})
 			total += session.Elapsed
 		}
-		tbl.AppendFooter(table.Row{"", "", "Total", fmt.Sprintf("%d minutes", total)})
+		tbl.AppendFooter(table.Row{"", "", "Total", fmt.Sprintf("%.2f hours | %d minutes", float64(total)/60.0, total)})
 		fmt.Println(tbl.Render())
 		return nil
 	},
