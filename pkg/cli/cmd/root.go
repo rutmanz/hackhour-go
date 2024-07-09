@@ -12,6 +12,7 @@ import (
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/rutmanz/hackhour-go/pkg/api"
+	"github.com/rutmanz/hackhour-go/pkg/slack"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -58,6 +59,14 @@ func newClient() *api.HackHourClient {
 		os.Exit(1)
 	}
 	return api.NewHackHourClient(viper.GetString("api_key"))
+}
+
+func newSlackClient() *slack.HackHourSlackClient {
+	if viper.GetString("slack_token") == "" {
+		fmt.Println("Please run authslack first")
+		os.Exit(1)
+	}
+	return slack.CreateClient(newClient(), viper.GetString("slack_token"))
 }
 
 func printSimple(objects ...any) {
