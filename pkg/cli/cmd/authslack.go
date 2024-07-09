@@ -37,7 +37,7 @@ var authslackCmd = &cobra.Command{
 			return err
 		}
 		fmt.Printf(" Success!\nAuthenticated as %v\n", identity.User)
-
+		viper.Set("slack_user", identity.UserID)
 		viper.Set("slack_token", key)
 		viper.WriteConfig()
 		return nil
