@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"sort"
+	"time"
 
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/rutmanz/hackhour-go/pkg/api"
@@ -58,14 +59,23 @@ var historyCmd = &cobra.Command{
 		tbl.AppendHeader(table.Row{"Date", "Time", "Goal", "Activity"})
 		total := 0
 		lastGoal := ""
+		lastDate := time.Unix(0, 0)
 		for _, session := range history {
-			if lastGoal != session.Goal && sortBy == "goal" {
-				tbl.AppendSeparator()
-				lastGoal = session.Goal
+			if cmd.Flag("clean").Value.String() == "false" {
+				if sortBy == "goal" {
+					if lastGoal != session.Goal {
+						tbl.AppendSeparator()
+						lastGoal = session.Goal
+					}
+				} else {
+					if lastDate.Local().Format("2006-01-02 MST") != session.CreatedAt.Local().Format("2006-01-02 MST") {
+						tbl.AppendSeparator()
+						lastDate = session.CreatedAt
+					}
+				}
 			}
 			tbl.AppendRow(table.Row{session.CreatedAt.Local().Format("Mon Jan _2 15:04 MST"), session.Elapsed, session.Goal, session.Work})
 			total += session.Elapsed
-
 		}
 		tbl.AppendFooter(table.Row{"", "", "Total", fmt.Sprintf("%d minutes", total)})
 		fmt.Println(tbl.Render())
@@ -78,4 +88,5 @@ func init() {
 
 	historyCmd.Flags().StringP("sort", "s", "newest", "Sorts history in by a given column. Options are: newest, oldest, goal")
 	historyCmd.Flags().StringP("goal", "g", "", "Only show sessions from this goal")
+	historyCmd.Flags().BoolP("clean", "c", false, "Hide separators")
 }
