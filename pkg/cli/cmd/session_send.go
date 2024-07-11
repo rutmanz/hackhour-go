@@ -49,7 +49,7 @@ var sendCmd = &cobra.Command{
 			if initial_commit == "" {
 				return fmt.Errorf("no known initial commit")
 			}
-			url, err := cli.GetCompareURL(initial_commit)
+			url, err = cli.GetCompareURL(initial_commit)
 			if err != nil {
 				return err
 			}
