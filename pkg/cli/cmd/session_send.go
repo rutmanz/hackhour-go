@@ -2,13 +2,13 @@ package cmd
 
 import (
 	"fmt"
-	"path"
-	"regexp"
 	"runtime"
 	"strings"
+	"time"
 
-	"github.com/go-git/go-git/v5"
+	"github.com/rutmanz/hackhour-go/pkg/cli"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var sendCmd = &cobra.Command{
@@ -17,29 +17,42 @@ var sendCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		msg := strings.Join(args, " ")
 		client := newSlackClient()
+
 		var url string
 		if cmd.Flag("git").Value.String() == "true" {
-			repo, err := git.PlainOpenWithOptions(".", &git.PlainOpenOptions{DetectDotGit: true})
+			url, err := cli.GetCommitURL()
 			if err != nil {
 				return err
 			}
-			remotes, err := repo.Remotes()
+			msg = fmt.Sprintf("%v\n\n%v", msg, url)
+		}
+
+		if cmd.Flag("compare").Value.String() == "true" {
+			initial_time_str := viper.GetString("session_start")
+			if initial_time_str == "" {
+				return fmt.Errorf("no known session start time")
+			}
+			session, err := client.GetHackHourClient().GetSession()
 			if err != nil {
 				return err
 			}
-			if len(remotes) == 0 {
-				return fmt.Errorf("no remotes found")
-			}
-			remote := remotes[0]
-			git_origin := strings.TrimSpace(remote.Config().URLs[0])
-			git_origin = regexp.MustCompile(`\.git$`).ReplaceAllString(git_origin, "")                           // remove trailing .git
-			git_origin = regexp.MustCompile(`\w+(:\w+)?@github\.com`).ReplaceAllString(git_origin, "github.com") // remove usernames and tokens from url
-			ref, err := repo.Reference("HEAD", true)
+			initial_time := &time.Time{}
+			err = initial_time.UnmarshalText([]byte(initial_time_str))
 			if err != nil {
 				return err
 			}
-			latest_commit := ref.Hash().String()
-			url = strings.Replace(path.Join(git_origin, "commit", latest_commit), ":/", "://", 1) // path.Join normalizes https:// to http:/
+			if (!session.CreatedAt.Equal(*initial_time)) {
+				return fmt.Errorf("session start time does not match current session")
+			}
+
+			initial_commit := viper.GetString("session_start_commit")
+			if initial_commit == "" {
+				return fmt.Errorf("no known initial commit")
+			}
+			url, err := cli.GetCompareURL(initial_commit)
+			if err != nil {
+				return err
+			}
 			msg = fmt.Sprintf("%v\n\n%v", msg, url)
 		}
 		if msg == "" {
@@ -61,4 +74,5 @@ func init() {
 	sessionCmd.AddCommand(sendCmd)
 	sendCmd.SetErrPrefix("Failed to send to session:")
 	sendCmd.Flags().BoolP("git", "g", false, "Include a link to the most recent git commit (supports github and gitlab)")
+	sendCmd.Flags().BoolP("compare", "c", false, "Include a comparison between the most recent commit and HEAD from the start of the session (supports github)")
 }

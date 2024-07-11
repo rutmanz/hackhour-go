@@ -21,7 +21,10 @@ func CreateClient(hhClient *api.HackHourClient, token string) *HackHourSlackClie
 }
 func (c *HackHourSlackClient) CheckAuth() (*slack.AuthTestResponse, error) {
 	return c.slack.AuthTest()
+}
 
+func (c *HackHourSlackClient) GetHackHourClient() (*api.HackHourClient) {
+	return c.hhClient
 }
 func (c *HackHourSlackClient) SendToSessionThread(msg string, url string) (channel string, ts string, err error) {
 	session, err := c.hhClient.GetSession()
@@ -36,7 +39,7 @@ func (c *HackHourSlackClient) SendToSessionThread(msg string, url string) (chann
 			Accessory: &slack.Accessory{
 				ButtonElement: &slack.ButtonBlockElement{
 					Type: slack.METButton,
-					Text: slack.NewTextBlockObject(slack.PlainTextType, "Open Commit", false, false),
+					Text: slack.NewTextBlockObject(slack.PlainTextType, "Open in Github", false, false),
 					URL:  url,
 				},
 			},

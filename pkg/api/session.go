@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"time"
 )
 
 func post[Req interface{}, Resp interface{}](c *HackHourClient, endpoint string, body *Req) (*Resp, error) {
@@ -45,7 +46,7 @@ type SessionStartRequest struct {
 type SessionStartResponse struct {
 	ID        string `json:"id"`
 	SlackID   string `json:"slackId"`
-	CreatedAt string `json:"createdAt"`
+	CreatedAt time.Time `json:"createdAt"`
 }
 
 func (c *HackHourClient) SessionStart(activity string) (*SessionStartResponse, error) {
@@ -57,7 +58,7 @@ func (c *HackHourClient) SessionStart(activity string) (*SessionStartResponse, e
 type SessionPauseResponse struct {
 	ID        string `json:"id"`
 	SlackID   string `json:"slackId"`
-	CreatedAt string `json:"createdAt"`
+	CreatedAt time.Time `json:"createdAt"`
 	Paused    bool   `json:"paused"`
 }
 
@@ -69,7 +70,7 @@ func (c *HackHourClient) SessionPause() (*SessionPauseResponse, error) {
 type SessionCancelResponse struct {
 	ID        string `json:"id"`
 	SlackID   string `json:"slackId"`
-	CreatedAt string `json:"createdAt"`
+	CreatedAt time.Time `json:"createdAt"`
 }
 
 func (c *HackHourClient) SessionCancel() (*SessionCancelResponse, error) {
