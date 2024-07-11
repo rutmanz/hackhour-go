@@ -34,6 +34,7 @@ var sendCmd = &cobra.Command{
 			if err != nil {
 				return err
 			}
+
 			msg = fmt.Sprintf("%v\n\n%v", msg, url)
 		}
 		if msg == "" {
@@ -45,6 +46,10 @@ var sendCmd = &cobra.Command{
 		}
 		fmt.Println("Message sent")
 		if runtime.GOOS != "windows" {
+			fmt.Println()
+			if url != "" {
+				fmt.Printf("\033]8;;%v\033\\Open Github Link\033]8;;\033\\\n", url)
+			}
 			fmt.Printf("\033]8;;https://hackclub.slack.com/archives/%v/p%v\033\\Open in Slack\033]8;;\033\\\n", channel, strings.Replace(ts, ".", "", 1))
 		}
 		return nil
