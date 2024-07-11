@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/go-git/go-git/v5"
 )
@@ -42,7 +43,7 @@ func getRepoBaseUrl(repo *git.Repository) (string, error) {
 	}
 	remote := remotes[0]
 	git_origin := strings.TrimSpace(remote.Config().URLs[0])
-	git_origin = regexp.MustCompile(`(?:\.git|/)$`).ReplaceAllString(git_origin, "")                           // remove trailing .git and trailing /
+	git_origin = regexp.MustCompile(`(?:\.git|/)$`).ReplaceAllString(git_origin, "")                     // remove trailing .git and trailing /
 	git_origin = regexp.MustCompile(`\w+(:\w+)?@github\.com`).ReplaceAllString(git_origin, "github.com") // remove usernames and tokens from url
 	return git_origin, nil
 }
@@ -63,7 +64,7 @@ func GetCommitURL() (string, error) {
 	return fmt.Sprintf("%v/commit/%v", baseUrl, head), nil
 }
 
-func GetCompareURL(hash string) (string, error){
+func GetCompareURL(time *time.Time) (string, error) {
 	repo, err := openGitRepo()
 	if err != nil {
 		return "", err
@@ -76,7 +77,15 @@ func GetCompareURL(hash string) (string, error){
 	if err != nil {
 		return "", err
 	}
-	return fmt.Sprintf("%v/compare/%v...%v", baseUrl, hash, head), nil
+	iter, err := repo.Log(&git.LogOptions{Until: time, Order: git.LogOrderCommitterTime})
+	if err != nil {
+		return "", err
+	}
+	first, err := iter.Next()
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("%v/compare/%v...%v", baseUrl, firstNChars(first.Hash.String(), 10), head), nil
 }
 
 func firstNChars(s string, n int) string {

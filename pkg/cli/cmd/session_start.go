@@ -4,9 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/rutmanz/hackhour-go/pkg/cli"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 var startCmd = &cobra.Command{
@@ -22,17 +20,6 @@ var startCmd = &cobra.Command{
 		}
 		fmt.Println("Session started")
 		printSimple(*session)
-		start_time, err := session.CreatedAt.MarshalText()
-		if err != nil {
-			return err
-		}
-		viper.Set("session_start", string(start_time))
-		git_head, err := cli.GetGitHead()
-		if err != nil {
-			return err
-		}
-		viper.Set("session_start_commit", git_head)
-		viper.WriteConfig()
 		return nil
 	},
 }

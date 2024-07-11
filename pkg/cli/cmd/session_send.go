@@ -4,11 +4,9 @@ import (
 	"fmt"
 	"runtime"
 	"strings"
-	"time"
 
 	"github.com/rutmanz/hackhour-go/pkg/cli"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 var sendCmd = &cobra.Command{
@@ -28,28 +26,11 @@ var sendCmd = &cobra.Command{
 		}
 
 		if cmd.Flag("compare").Value.String() == "true" {
-			initial_time_str := viper.GetString("session_start")
-			if initial_time_str == "" {
-				return fmt.Errorf("no known session start time")
-			}
 			session, err := client.GetHackHourClient().GetSession()
 			if err != nil {
 				return err
 			}
-			initial_time := &time.Time{}
-			err = initial_time.UnmarshalText([]byte(initial_time_str))
-			if err != nil {
-				return err
-			}
-			if (!session.CreatedAt.Equal(*initial_time)) {
-				return fmt.Errorf("session start time does not match current session")
-			}
-
-			initial_commit := viper.GetString("session_start_commit")
-			if initial_commit == "" {
-				return fmt.Errorf("no known initial commit")
-			}
-			url, err = cli.GetCompareURL(initial_commit)
+			url, err = cli.GetCompareURL(&session.CreatedAt)
 			if err != nil {
 				return err
 			}
