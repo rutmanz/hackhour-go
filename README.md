@@ -5,6 +5,8 @@ Golang CLI tool and API wrapper for HackClub's [HackHour API](https://github.com
 
 ## CLI Tool
 ### Installation
+Either install directly from the latest commit, or download the appropriate binary from the [latest release artifacts](https://github.com/rutmanz/hackhour-go/releases/latest)
+
 ```
 $ go install github.com/rutmanz/hackhour-go@latest
 ```
